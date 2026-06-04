@@ -69,12 +69,10 @@ constexpr void Num_add(Num* obj, Num other) noexcept {
   if (obj->type == Num_Float || other.type == Num_Float) { 
     obj->f = Num_asf(*obj) + Num_asf(other); 
     obj->type = Num_Float;
-  }
-  else if (obj->type == Num_Unsigned || other.type == Num_Unsigned) { 
+  } else if (obj->type == Num_Unsigned || other.type == Num_Unsigned) { 
     obj->u = Num_asu(*obj) + Num_asu(other); 
     obj->type = Num_Unsigned;
-  }
-  else {
+  } else {
     obj->i += other.i;
     obj->type = Num_Signed; 
   }
@@ -86,12 +84,10 @@ constexpr void Num_sub(Num* obj, Num other) noexcept {
   if (obj->type == Num_Float || other.type == Num_Float) { 
     obj->f = Num_asf(*obj) - Num_asf(other); 
     obj->type = Num_Float;
-  }
-  else if (obj->type == Num_Unsigned || other.type == Num_Unsigned) { 
+  } else if (obj->type == Num_Unsigned || other.type == Num_Unsigned) { 
     obj->u = Num_asu(*obj) - Num_asu(other); 
     obj->type = Num_Unsigned;
-  }
-  else {
+  } else {
     obj->i -= other.i;
     obj->type = Num_Signed; 
   }
@@ -103,12 +99,10 @@ constexpr void Num_mul(Num* obj, Num other) noexcept {
   if (obj->type == Num_Float || other.type == Num_Float) { 
     obj->f = Num_asf(*obj) * Num_asf(other); 
     obj->type = Num_Float;
-  }
-  else if (obj->type == Num_Unsigned || other.type == Num_Unsigned) { 
+  } else if (obj->type == Num_Unsigned || other.type == Num_Unsigned) { 
     obj->u = Num_asu(*obj) * Num_asu(other); 
     obj->type = Num_Unsigned;
-  }
-  else {
+  } else {
     obj->i *= other.i;
     obj->type = Num_Signed; 
   }
@@ -121,12 +115,10 @@ constexpr void Num_div(Num* obj, Num other) noexcept {
   if (obj->type == Num_Float || other.type == Num_Float) { 
     obj->f = Num_asf(*obj) / Num_asf(other); 
     obj->type = Num_Float;
-  }
-  else if (obj->type == Num_Unsigned || other.type == Num_Unsigned) { 
+  } else if (obj->type == Num_Unsigned || other.type == Num_Unsigned) { 
     obj->u = Num_asu(*obj) / Num_asu(other); 
     obj->type = Num_Unsigned;
-  }
-  else {
+  } else {
     obj->i /= other.i;
     obj->type = Num_Signed; 
   }

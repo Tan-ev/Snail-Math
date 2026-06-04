@@ -3,8 +3,4 @@
 
 #include "defs/typedef.h"
 
-namespace alg {
-  
-} 
-
 #endif
