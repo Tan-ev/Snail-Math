@@ -4,8 +4,8 @@
 typedef signed int          i;
 typedef signed char         i8;
 typedef signed short        i16;
-typedef signed int          i32;
-typedef signed long long    i64;
+typedef signed int          i32; 
+typedef signed long long    i64; 
 
 typedef unsigned int        u;
 typedef unsigned char       u8;
@@ -25,45 +25,45 @@ typedef struct Num {
   union { i64 i; u64 u; f64 f;};
 } Num;
 
-Num Num_i(i64 val) {
+inline static Num Num_i(i64 val) {
   Num new_Num; new_Num.type = Num_Signed; new_Num.i = val;
   return new_Num;
 }
 
-Num Num_u(u64 val) {
+inline static Num Num_u(u64 val) {
   Num new_Num; new_Num.type = Num_Unsigned; new_Num.u = val;
   return new_Num;
 }
 
-Num Num_f(f64 val) {
+inline static Num Num_f(f64 val) {
   Num new_Num; new_Num.type = Num_Float; new_Num.f = val;
   return new_Num;
 }
 
-void Num_set(Num* obj, Num other) {
+inline static void Num_set(Num* obj, Num other) {
   if (!obj) return; 
   *obj = other; 
 }
 
-constexpr f64 Num_asf(Num obj) noexcept {
+inline static constexpr f64 Num_asf(Num obj) noexcept {
   if (obj.type == Num_Float)    return (f64)obj.f;
   if (obj.type == Num_Unsigned) return (f64)obj.u;
   return (f64)obj.i;
 }
 
-constexpr u64 Num_asu(Num obj) noexcept {
+inline static constexpr u64 Num_asu(Num obj) noexcept {
   if (obj.type == Num_Float)    return (u64)obj.f;
   if (obj.type == Num_Unsigned) return (u64)obj.u;
   return (u64)obj.i;
 }
 
-constexpr i64 Num_asi(Num obj) noexcept {
+inline static constexpr i64 Num_asi(Num obj) noexcept {
   if (obj.type == Num_Float)    return (i64)obj.f;
   if (obj.type == Num_Unsigned) return (i64)obj.u;
   return (i64)obj.i;
 }
 
-constexpr void Num_add(Num* obj, Num other) noexcept {
+inline static constexpr void Num_add(Num* obj, Num other) noexcept {
   if (!obj) return;
 
   if (obj->type == Num_Float || other.type == Num_Float) { 
@@ -78,7 +78,7 @@ constexpr void Num_add(Num* obj, Num other) noexcept {
   }
 }
 
-constexpr void Num_sub(Num* obj, Num other) noexcept {
+inline static constexpr void Num_sub(Num* obj, Num other) noexcept {
   if (!obj) return;
 
   if (obj->type == Num_Float || other.type == Num_Float) { 
@@ -93,7 +93,7 @@ constexpr void Num_sub(Num* obj, Num other) noexcept {
   }
 }
 
-constexpr void Num_mul(Num* obj, Num other) noexcept {
+inline static constexpr void Num_mul(Num* obj, Num other) noexcept {
   if (!obj) return;
 
   if (obj->type == Num_Float || other.type == Num_Float) { 
@@ -108,7 +108,7 @@ constexpr void Num_mul(Num* obj, Num other) noexcept {
   }
 }
 
-constexpr void Num_div(Num* obj, Num other) noexcept {
+inline static constexpr void Num_div(Num* obj, Num other) noexcept {
   if (!obj) { return; }
   if (other.type != Num_Float && other.i == 0) { return; }
 
@@ -123,5 +123,21 @@ constexpr void Num_div(Num* obj, Num other) noexcept {
     obj->type = Num_Signed; 
   }
 }
+
+// inline static 
+
+#define NUM(data) _Generic((data),                        \
+  i8:     Num_i, i16:    Num_i, i32:    Num_i, i64:    Num_i, \
+  u8:     Num_u, u16:    Num_u, u32:    Num_u, u64:    Num_u, \
+  f32:    Num_f, f64:    Num_f                                \
+)(data)
+# define ASI(obj)         Num_asi(obj)
+# define ASU(obj)         Num_asu(obj)
+# define ASF(obj)         Num_asf(obj)
+# define SET(obj, other)  Num_set(obj, other)
+# define ADD(obj, other)  Num_add(obj, other)
+# define SUB(obj, other)  Num_sub(obj, other)
+# define MUL(obj, other)  Num_mul(obj, other)
+# define DIV(obj, other)  Num_div(obj, other)
 
 #endif

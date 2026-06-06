@@ -1,7 +1,7 @@
 #ifndef SMATH_CONSTDEF_H
 #define SMATH_CONSTDEF_H
 
-#include "typedef.h" // Để dùng các alias i64, f64 mà bạn đã tạo
+#include "typedef.h" 
 
 inline constexpr f64 pi      = 3.141592653589793;
 inline constexpr f64 sqrt2   = 1.414213562373095;

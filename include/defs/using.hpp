@@ -1,13 +1,14 @@
 #ifndef SMATH_TYPES_HPP
 #define SMATH_TYPES_HPP
 
-using i     = signed int;
+#include "defs/typedef.h"
+
 using i8    = signed char;
 using i16   = signed short;
 using i32   = signed int;
 using i64   = signed long long;
 
-using u     = unsigned int;
+using uint  = unsigned int;
 using u8    = unsigned char;
 using u16   = unsigned short;
 using u32   = unsigned int;
@@ -17,103 +18,72 @@ using f32   = float;
 using f64   = double;
 
 /* define number type */
-class Num {
+class CNum: Num {
 public:
-  enum class Type { Signed, Unsigned, Float };
-  Type type;
-  union { i64 i; u64 u; f64 f; };
+  /* constructor method */
+  inline constexpr CNum(i64 value)  noexcept { Num_i(value); }
+  inline constexpr CNum(u64 value)  noexcept { Num_u(value); }
+  inline constexpr CNum(f64 value)  noexcept { Num_f(value); }
+  inline constexpr CNum()           noexcept { Num_i(0);     }
+  ~CNum() = default;
 
-  constexpr Num(i64 val)  noexcept : type(Type::Signed), i(val) {}
-  constexpr Num(u64 val)  noexcept : type(Type::Unsigned), u(val) {}
-  constexpr Num(f64 val)  noexcept : type(Type::Float), f(val) {}
-  constexpr Num()         noexcept : type(Type::Signed), i(0) {}
+  /* cast to normal C/C++ number types */
+  inline constexpr operator i64()   noexcept { return Num_asi(*this); }
+  inline constexpr operator u64()   noexcept { return Num_asu(*this); }
+  inline constexpr operator f64()   noexcept { return Num_asf(*this); }
+  inline constexpr operator Num()   noexcept { return Num{ this->type, this->i }; }
 
-  /* cast to C/C++ number type */
-  constexpr operator i64() const noexcept {
-    if (type == Type::Signed)   return (i64)i;
-    if (type == Type::Unsigned) return (i64)u;
-    return (i64)f;
-  }
+  /* calculate function */
+  inline constexpr void set(Num other) noexcept { Num_set(this, other); }
+  inline constexpr void add(Num other) noexcept { Num_add(this, other); }
+  inline constexpr void sub(Num other) noexcept { Num_sub(this, other); }
+  inline constexpr void mul(Num other) noexcept { Num_mul(this, other); }
+  inline constexpr void div(Num other) noexcept { Num_div(this, other); }
 
-  constexpr operator u64() const noexcept {
-    if (type == Type::Signed)   return (u64)i;
-    if (type == Type::Unsigned) return (u64)u;
-    return (u64)f;
-  }
-
-  constexpr operator f64() const noexcept {
-    if (type == Type::Signed)   return (f64)i;
-    if (type == Type::Unsigned) return (f64)u;
-    return (f64)f;
-  }
-
-  /* assign operation */
-  constexpr Num& operator=(i64 val) noexcept {
-    type = Type::Signed; i = val;
-    return *this; 
-  }
-
-  constexpr Num& operator=(u64 val) noexcept {
-    type = Type::Unsigned; u = val;
+  /* operation function */
+  inline constexpr CNum& operator=(Num other) noexcept { 
+    Num_set(this, other); 
     return *this;
   }
 
-  constexpr Num& operator=(f64 val) noexcept {
-    type = Type::Float; f = val;
-    return *this;
+  inline constexpr CNum operator+(Num other) const noexcept {
+    CNum result = *this; Num_add(&result, other);
+    return result;
   }
 
-  /* calculate operation */
-  constexpr Num operator+(Num other) const noexcept {
-    if (this->type == Type::Float || other.type == Type::Float) {
-      return (f64)*this + (f64)other;
-    }
-
-    if (this->type == Type::Unsigned || other.type == Type::Unsigned) {
-      return (u64)*this + (u64)other;
-    }
-
-    return (i64)*this + (i64)other;
+  inline constexpr CNum operator-(Num other) const noexcept {
+    CNum result = *this; Num_sub(&result, other);
+    return result;
+  }  
+  
+  inline constexpr CNum operator*(Num other) const noexcept {
+    CNum result = *this; Num_mul(&result, other);
+    return result;
+  }  
+  
+  inline constexpr CNum operator/(Num other) const noexcept {
+    CNum result = *this; Num_div(&result, other);
+    return result;
   }
 
-  constexpr Num operator-(Num other) const noexcept {
-    if (this->type == Type::Float || other.type == Type::Float) {
-      return (f64)*this - (f64)other;
-    }
-
-    if (this->type == Type::Unsigned || other.type == Type::Unsigned) {
-      return (u64)*this - (u64)other;
-    }
-
-    return (i64)*this - (i64)other;
+  inline constexpr bool operator==(Num other) const noexcept { 
+    return this->i == other.i && this->type == other.type; 
   }
 
-  constexpr Num operator*(Num other) const noexcept {
-    if (this->type == Type::Float || other.type == Type::Float) {
-      return (f64)*this * (f64)other;
-    }
-
-    if (this->type == Type::Unsigned || other.type == Type::Unsigned) {
-      return (u64)*this * (u64)other;
-    }
-
-    return (i64)*this * (i64)other;
+  inline constexpr bool operator!=(Num other) const noexcept { 
+    return !(this->i == other.i && this->type == other.type); 
   }
 
-  constexpr Num operator/(Num other) const noexcept {
-    /* can't divide with 0 */
-    if ((f64)other == 0.0) return Num((i64)0);
-
-    if (this->type == Type::Float || other.type == Type::Float) {
-      return (f64)*this / (f64)other;
-    }
-
-    if (this->type == Type::Unsigned || other.type == Type::Unsigned) {
-      return (u64)*this / (u64)other;
-    }
-
-    return (i64)*this / (i64)other;
+  inline constexpr bool operator<=(Num other)  const noexcept { 
+    return this->i < other.i || *this == other; 
   }
+
+  inline constexpr bool operator>=(Num other)  const noexcept { 
+    return this->i > other.i || *this == other; 
+  }
+
+  inline constexpr bool operator<(Num other)  const noexcept { return this->i < other.i; }
+  inline constexpr bool operator>(Num other)  const noexcept { return this->i > other.i; }
 };
 
 #endif
