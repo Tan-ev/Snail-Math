@@ -163,59 +163,69 @@ namespace alg
     return result;
   }
 
-  inline i8 cmp_ii(i64 left, i64 right) noexcept
+  inline i8 cmp_ii(Num left, Num right) noexcept
   {
-    if (left < right)
+    if (left.i < right.i)
     { return SM_LT; }
-    if (left > right)
+    if (left.i > right.i)
     { return SM_GT; }
     return SM_EQ;
   }
 
-  inline i8 cmp_uu(u64 left, u64 right) noexcept
+  inline i8 cmp_uu(Num left, Num right) noexcept
   {
-    if (left < right)
+    if (left.u < right.u)
     { return SM_LT; }
-    if (left > right)
+    if (left.u > right.u)
     { return SM_GT; }
     return SM_EQ;
   }
 
-  inline i8 cmp_ff(f64 left, f64 right) noexcept
+  inline i8 cmp_ff(Num left, Num right) noexcept
   {
-    if (left < right)
+    if (left.f < right.f)
     { return SM_LT; }
-    if (left > right)
+    if (left.f > right.f)
     { return SM_GT; }
     return SM_EQ;
   }
 
-  inline i8 cmp_iu(i64 left, u64 right) noexcept
+  inline i8 cmp_iu(Num left, Num right) noexcept
   {
-    if (left < 0)
+    if (left.i < 0)
     { return SM_LT; }
 
-    return cmp_uu(
-      static_cast<u64>(left), 
-      right
-    );
-  }
+    u64 converted = static_cast<u64>(left.i);
 
-  inline i8 cmp_ui(u64 left, i64 right) noexcept
-  {
-    if (right < 0)
+    if (converted < right.u)
+    { return SM_LT; }
+
+    if (converted > right.u)
     { return SM_GT; }
 
-    return cmp_uu(
-      static_cast<u64>(right), 
-      left
-    );
+    return SM_EQ;
   }
 
-  inline i8 cmp_uf(u64 left, f64 right) noexcept
+  inline i8 cmp_ui(Num left, Num right) noexcept
   {
-    long double casted_lval = static_cast<long double>(left);
-    long double casted_rval = static_cast<long double>(right);
+    if (right.i < 0)
+    { return SM_GT; }
+
+    u64 converted = static_cast<u64>(right.i);
+
+    if (left.u < converted)
+    { return SM_LT; }
+
+    if (left.u > converted)
+    { return SM_GT; }
+
+    return SM_EQ;
+  }
+
+  inline i8 cmp_uf(Num left, Num right) noexcept
+  {
+    long double casted_lval = static_cast<long double>(left.u);
+    long double casted_rval = static_cast<long double>(right.f);
 
     if (casted_lval < casted_rval)
     { return SM_LT; }
@@ -225,10 +235,10 @@ namespace alg
     return SM_EQ;
   }  
   
-  inline i8 cmp_fu(f64 left, u64 right) noexcept
+  inline i8 cmp_fu(Num left, Num right) noexcept
   {
-    long double casted_lval = static_cast<long double>(left);
-    long double casted_rval = static_cast<long double>(right);
+    long double casted_lval = static_cast<long double>(left.f);
+    long double casted_rval = static_cast<long double>(right.u);
 
     if (casted_lval < casted_rval)
     { return SM_LT; }
@@ -239,10 +249,10 @@ namespace alg
   }
 
 
-  inline i8 cmp_if(i64 left, f64 right) noexcept
+  inline i8 cmp_if(Num left, Num right) noexcept
   {
-    long double casted_lval = static_cast<long double>(left);
-    long double casted_rval = static_cast<long double>(right);
+    long double casted_lval = static_cast<long double>(left.i);
+    long double casted_rval = static_cast<long double>(right.f);
 
     if (casted_lval < casted_rval)
     { return SM_LT; }
@@ -252,10 +262,10 @@ namespace alg
     return SM_EQ;
   }
 
-  inline i8 cmp_fi(f64 left, i64 right) noexcept
+  inline i8 cmp_fi(Num left, Num right) noexcept
   {
-    long double casted_lval = static_cast<long double>(left);
-    long double casted_rval = static_cast<long double>(right);
+    long double casted_lval = static_cast<long double>(left.f);
+    long double casted_rval = static_cast<long double>(right.i);
 
     if (casted_lval < casted_rval)
     { return SM_LT; }
@@ -269,45 +279,27 @@ namespace alg
   {
     switch (lval.type)
     {
-    case Num_Signed:
-      switch (rval.type)
+    case Num_Signed: switch (rval.type)
       {
-      case Num_Signed:
-        return cmp_ii(lval.i, rval.i);
-
-      case Num_Unsigned:
-        return cmp_iu(lval.i, rval.u);
-
-      case Num_Float:
-        return cmp_if(lval.i, rval.f);
+      case Num_Signed:    return cmp_ii(lval, rval);
+      case Num_Unsigned:  return cmp_iu(lval, rval);
+      case Num_Float:     return cmp_if(lval, rval);
       }
       break;
 
-    case Num_Unsigned:
-      switch (rval.type)
+    case Num_Unsigned: switch (rval.type)
       {
-      case Num_Signed:
-        return cmp_ui(lval.u, rval.i);
-
-      case Num_Unsigned:
-        return cmp_uu(lval.u, rval.u);
-
-      case Num_Float:
-        return cmp_uf(lval.u, rval.f);
+      case Num_Signed:    return cmp_ui(lval, rval);
+      case Num_Unsigned:  return cmp_uu(lval, rval);
+      case Num_Float:     return cmp_uf(lval, rval);
       }
       break;
 
-    case Num_Float:
-      switch (rval.type)
+    case Num_Float: switch (rval.type)
       {
-      case Num_Signed:
-        return cmp_fi(lval.f, rval.i);
-
-      case Num_Unsigned:
-        return cmp_fu(lval.f, rval.u);
-
-      case Num_Float:
-        return cmp_ff(lval.f, rval.f);
+      case Num_Signed:    return cmp_fi(lval, rval);
+      case Num_Unsigned:  return cmp_fu(lval, rval);
+      case Num_Float:     return cmp_ff(lval, rval);
       }
       break;
     }
@@ -364,4 +356,9 @@ namespace alg
 
     return Num_i( Num_asi(lval) % Num_asi(rval));
   }
+}
+
+extern "C" 
+{
+
 }
