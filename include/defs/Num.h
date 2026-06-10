@@ -185,6 +185,8 @@ inline static constexpr void Num_div(Num *obj, Num other)
   }
 }
 
+#ifndef __cplusplus
+
 #define NUM(data) _Generic((data), \
   i8: Num_i,                     \
   i16: Num_i,                    \
@@ -207,6 +209,9 @@ inline static constexpr void Num_div(Num *obj, Num other)
   u64: (u64)Num_asu(data),             \
   f32: (f32)Num_asf(data),             \
   f64: (f64)Num_asf(data), )
+  
+#endif
+
 #define SET(obj, other) Num_set(obj, other)
 #define ADD(obj, other) Num_add(obj, other)
 #define SUB(obj, other) Num_sub(obj, other)

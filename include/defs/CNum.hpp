@@ -1,7 +1,7 @@
 #ifndef SMATH_TYPES_HPP
 #define SMATH_TYPES_HPP
 
-#include "defs/typedef.h"
+#include "defs/Num.h"
 
 using i8  = signed char;
 using i16 = signed short;
@@ -57,21 +57,21 @@ public:
   { return static_cast<f32>(this->f); }
 
   /* calculate function */
-  inline constexpr void set(Num other) noexcept 
-  { Num_set(this, other); }
-  inline constexpr void add(Num other) noexcept 
+  inline void set(Num other) noexcept 
+  { *this = other; }
+  inline void add(Num other) noexcept 
   { Num_add(this, other); }
-  inline constexpr void sub(Num other) noexcept 
+  inline void sub(Num other) noexcept 
   { Num_sub(this, other); }
-  inline constexpr void mul(Num other) noexcept 
+  inline void mul(Num other) noexcept 
   { Num_mul(this, other); }
-  inline constexpr void div(Num other) noexcept 
+  inline void div(Num other) noexcept 
   { Num_div(this, other); }
 
   /* operation function */
   inline constexpr CNum &operator=(Num other) noexcept
   {
-    Num_set(this, other);
+    *this = other;
     return *this;
   }
 

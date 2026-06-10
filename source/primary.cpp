@@ -1,6 +1,5 @@
 #include "primary.h"
-#include "defs/using.hpp"
-#include <vector>
+#include "defs/CNum.hpp"
 
 namespace alg
 {
@@ -21,7 +20,7 @@ namespace alg
       if (val.f < 0.0)
       { val.f = -val.f; }
       break;
-    }
+    } 
 
     return val;
   }
@@ -109,7 +108,7 @@ namespace alg
 
     /* move comma back */
     f64 result = ceiled_val / multi;
-    return NUM(result);
+    return Num_f(result);
   }
 
   inline Num floor(i16 place, Num val) noexcept
@@ -148,7 +147,7 @@ namespace alg
     /* move comma back */
     f64 result = floored_val / multi;
 
-    return NUM(result);
+    return Num_f(result);
   }
 
   inline Num round(i16 place, Num val) noexcept
@@ -165,12 +164,12 @@ namespace alg
     if (float_num >= 0.0)
     {
       f64 rounded_val = float_num + 0.5;
-      result = floor(place, NUM(rounded_val));
+      result = floor(place, Num_f(rounded_val));
     }
     else
     {
       f64 rounded_val = float_num - 0.5;
-      result = ceil(place, NUM(rounded_val));
+      result = ceil(place, Num_f(rounded_val));
     }
 
     return result;
@@ -334,7 +333,7 @@ namespace alg
     Num result = rval;
 
     SUB(&result, lval); 
-    DIV(&result, NUM(2)); 
+    DIV(&result, Num_i(2)); 
     ADD(&result, lval); 
 
     return result;
@@ -381,54 +380,54 @@ namespace alg
 
 extern "C" 
 {
-  Num sm_abs(Num val)
+  Num sm_abs(Num val) noexcept
   { return alg::abs(val); }
-  Num sm_neg(Num val)
+  Num sm_neg(Num val) noexcept
   { return alg::neg(val); }
-  i8 sm_sign(Num val)
+  i8 sm_sign(Num val) noexcept
   { return alg::sign(val); }
 
-  Num sm_ceil(i16 place, Num val)
+  Num sm_ceil(i16 place, Num val) noexcept
   { return alg::ceil(place, val); }
-  Num sm_floor(i16 place, Num val)
+  Num sm_floor(i16 place, Num val) noexcept
   { return alg::floor(place, val); }
-  Num sm_round(i16 place, Num val)
+  Num sm_round(i16 place, Num val) noexcept
   { return alg::round(place, val); }
 
-  i8 sm_cmpii(Num lval, Num rval)
+  i8 sm_cmpii(Num lval, Num rval) noexcept
   { return alg::cmp_ii(lval, rval); }
-  i8 sm_cmpiu(Num lval, Num rval)
+  i8 sm_cmpiu(Num lval, Num rval) noexcept
   { return alg::cmp_iu(lval, rval); }
-  i8 sm_cmpif(Num lval, Num rval)
+  i8 sm_cmpif(Num lval, Num rval) noexcept
   { return alg::cmp_if(lval, rval); }
 
-  i8 sm_cmpui(Num lval, Num rval)
+  i8 sm_cmpui(Num lval, Num rval) noexcept
   { return alg::cmp_ui(lval, rval); }
-  i8 sm_cmpuu(Num lval, Num rval)
+  i8 sm_cmpuu(Num lval, Num rval) noexcept
   { return alg::cmp_uu(lval, rval); }
-  i8 sm_cmpuf(Num lval, Num rval)
+  i8 sm_cmpuf(Num lval, Num rval) noexcept
   { return alg::cmp_uf(lval, rval); }
 
-  i8 sm_cmpfi(Num lval, Num rval)
+  i8 sm_cmpfi(Num lval, Num rval) noexcept
   { return alg::cmp_fi(lval, rval); }
-  i8 sm_cmpfu(Num lval, Num rval)
+  i8 sm_cmpfu(Num lval, Num rval) noexcept
   { return alg::cmp_fu(lval, rval); }
-  i8 sm_cmpff(Num lval, Num rval)
+  i8 sm_cmpff(Num lval, Num rval) noexcept
   { return alg::cmp_ff(lval, rval); }
 
-  i8 sm_cmp(Num lval, Num rval)
+  i8 sm_cmp(Num lval, Num rval) noexcept
   { return alg::cmp(lval, rval); }
 
-  Num sm_min(Num lval, Num rval)
+  Num sm_min(Num lval, Num rval) noexcept
   { return alg::min(lval, rval); }
-  Num sm_max(Num lval, Num rval)
+  Num sm_max(Num lval, Num rval) noexcept
   { return alg::max(lval, rval); }
-  Num sm_clamp(Num val, Num min_val, Num max_val)
+  Num sm_clamp(Num val, Num min_val, Num max_val) noexcept
   { return alg::clamp(val, min_val, max_val); }
-  Num sm_avr(Num lval, Num rval)
+  Num sm_avr(Num lval, Num rval) noexcept
   { return alg::avr(lval, rval); }
-  Num sm_fmod(Num lval, Num rval)
+  Num sm_fmod(Num lval, Num rval) noexcept
   { return alg::fmod(lval, rval); }
-  Num sm_mod(Num lval, Num rval)
+  Num sm_mod(Num lval, Num rval) noexcept
   { return alg::mod(lval, rval); }
 }

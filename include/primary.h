@@ -1,7 +1,7 @@
-#ifndef SMATH_PRIMARY_H
-#define SMATH_PRIMARY_H
+#ifndef SM_PRIMARY_H
+#define SM_PRIMARY_H
 
-#include "defs/typedef.h"
+#include "defs/Num.h"
 #include "defs/constdef.h"
 
 /* the result of sm_sign */

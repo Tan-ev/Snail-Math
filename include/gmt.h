@@ -1,9 +1,8 @@
-#ifndef SMATH_GEOMETRY_H
-#define SMATH_GEOMETRY_H
+#ifndef SM_GEOMETRY_H
+#define SM_GEOMETRY_H
 
-#include "defs/typedef.h"
 #include "defs/constdef.h"
-#include "basic.h"
+#include "defs/Num.h"
 
 #ifdef __cplusplus
 extern "C" {
