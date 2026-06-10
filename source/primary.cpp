@@ -11,40 +11,36 @@ namespace alg
     case Num_Signed:
       if (val.i < 0)
       { val.i = -val.i; }
-
-      break;
-
-    case Num_Float:
-      if (val.f < 0.0) 
-      { val.f = -val.f; }
-
       break;
 
     case Num_Unsigned:
-      /* already non-negative */
+      /* already positive */
+      break;
+
+    case Num_Float:
+      if (val.f < 0.0)
+      { val.f = -val.f; }
       break;
     }
 
     return val;
   }
 
-  inline Num neg(Num val) noexcept 
+  inline Num neg(Num val) noexcept
   {
     switch (val.type)
     {
     case Num_Signed:
       val.i = -val.i;
-      /* dont check for signed num type */
       break;
 
     case Num_Unsigned:
-      val.u = -(i64)val.u;
-      /* plus negative alway be minus */
+      val.i = -static_cast<i64>(val.u);
       val.type = Num_Signed;
       break;
+
     case Num_Float:
       val.f = -val.f;
-      /* float can store both minus, plus val */
       break;
     }
 
@@ -53,10 +49,27 @@ namespace alg
   
   inline i8 sign(Num val) noexcept
   {
-    if ((i64)val.i < 0) 
-    { return SM_MINUS; }
-    if ((i64)val.i > 0)
-    { return SM_PLUS; }
+    switch (val.type)
+    {
+    case Num_Signed:
+      if (val.i < 0)
+      { return SM_MINUS; }
+      if (val.i > 0)
+      { return SM_PLUS; }
+      break;
+
+    case Num_Unsigned:
+      if (val.u > 0)
+      { return SM_PLUS; }
+      break;
+
+    case Num_Float:
+      if (val.f < 0.0)
+      { return SM_MINUS; }
+      if (val.f > 0.0)
+      { return SM_PLUS; }
+      break;
+    }
 
     return SM_ZERO;
   }
@@ -128,7 +141,7 @@ namespace alg
     f64 floored_val;
 
     if (float_num < static_cast<f64>(int_val))
-    { floored_val = static_cast<i64>(int_val+1); }
+    { floored_val = static_cast<i64>(int_val-1); }
     else 
     { floored_val = static_cast<i64>(int_val); }
 
@@ -172,37 +185,28 @@ namespace alg
     return SM_EQ;
   }
 
-  inline i8 cmp_uu(Num left, Num right) noexcept
-  {
-    if (left.u < right.u)
-    { return SM_LT; }
-    if (left.u > right.u)
-    { return SM_GT; }
-    return SM_EQ;
-  }
-
-  inline i8 cmp_ff(Num left, Num right) noexcept
-  {
-    if (left.f < right.f)
-    { return SM_LT; }
-    if (left.f > right.f)
-    { return SM_GT; }
-    return SM_EQ;
-  }
-
   inline i8 cmp_iu(Num left, Num right) noexcept
   {
     if (left.i < 0)
     { return SM_LT; }
 
     u64 converted = static_cast<u64>(left.i);
-
     if (converted < right.u)
     { return SM_LT; }
-
     if (converted > right.u)
     { return SM_GT; }
+    return SM_EQ;
+  }
 
+  inline i8 cmp_if(Num left, Num right) noexcept
+  {
+    long double casted_lval = static_cast<long double>(left.i);
+    long double casted_rval = static_cast<long double>(right.f);
+
+    if (casted_lval < casted_rval)
+    { return SM_LT; }
+    if (casted_lval > casted_rval)
+    { return SM_GT; }
     return SM_EQ;
   }
 
@@ -212,13 +216,19 @@ namespace alg
     { return SM_GT; }
 
     u64 converted = static_cast<u64>(right.i);
-
     if (left.u < converted)
     { return SM_LT; }
-
     if (left.u > converted)
     { return SM_GT; }
+    return SM_EQ;
+  }
 
+  inline i8 cmp_uu(Num left, Num right) noexcept
+  {
+    if (left.u < right.u)
+    { return SM_LT; }
+    if (left.u > right.u)
+    { return SM_GT; }
     return SM_EQ;
   }
 
@@ -231,36 +241,8 @@ namespace alg
     { return SM_LT; }
     if (casted_lval > casted_rval)
     { return SM_GT; }
-
     return SM_EQ;
   }  
-  
-  inline i8 cmp_fu(Num left, Num right) noexcept
-  {
-    long double casted_lval = static_cast<long double>(left.f);
-    long double casted_rval = static_cast<long double>(right.u);
-
-    if (casted_lval < casted_rval)
-    { return SM_LT; }
-    if (casted_lval > casted_rval)
-    { return SM_GT; }
-
-    return SM_EQ;
-  }
-
-
-  inline i8 cmp_if(Num left, Num right) noexcept
-  {
-    long double casted_lval = static_cast<long double>(left.i);
-    long double casted_rval = static_cast<long double>(right.f);
-
-    if (casted_lval < casted_rval)
-    { return SM_LT; }
-    if (casted_lval > casted_rval)
-    { return SM_GT; }
-
-    return SM_EQ;
-  }
 
   inline i8 cmp_fi(Num left, Num right) noexcept
   {
@@ -271,7 +253,27 @@ namespace alg
     { return SM_LT; }
     if (casted_lval > casted_rval)
     { return SM_GT; }
+    return SM_EQ;
+  }
+  
+  inline i8 cmp_fu(Num left, Num right) noexcept
+  {
+    long double casted_lval = static_cast<long double>(left.f);
+    long double casted_rval = static_cast<long double>(right.u);
 
+    if (casted_lval < casted_rval)
+    { return SM_LT; }
+    if (casted_lval > casted_rval)
+    { return SM_GT; }
+    return SM_EQ;
+  }
+
+  inline i8 cmp_ff(Num left, Num right) noexcept
+  {
+    if (left.f < right.f)
+    { return SM_LT; }
+    if (left.f > right.f)
+    { return SM_GT; }
     return SM_EQ;
   }
 
@@ -338,27 +340,95 @@ namespace alg
     return result;
   }
 
-  inline f64 fmod(f64 left, f64 right) noexcept
+  inline Num fmod(Num left, Num right) noexcept
   {
-    if (right == 0.0)
+    f64 lval = Num_asf(left);
+    f64 rval = Num_asf(right);
+
+    if (rval == 0.0)
     { return left; }
-    i64 int_div = static_cast<i64>(left / right);
-    return left - static_cast<f64>(int_div) * right;
+
+    i64 q = static_cast<i64>(lval / rval);
+
+    return Num_f(
+      lval - static_cast<f64>(q) * rval
+    );
   }
 
   Num mod(Num lval, Num rval) noexcept
   {
     if (lval.type == Num_Float || rval.type == Num_Float)
-    { return Num_f(fmod(Num_asf(lval),Num_asf(rval))); }
-    
-    if (lval.type == Num_Unsigned || rval.type == Num_Unsigned)
-    { return Num_u(Num_asu(lval) % Num_asu(rval)); }
+    { return fmod(lval, rval); }
 
-    return Num_i( Num_asi(lval) % Num_asi(rval));
+    if (lval.type == Num_Unsigned || rval.type == Num_Unsigned)
+    {
+      u64 divisor = Num_asu(rval);
+
+      if (divisor == 0)
+      { return lval; }
+
+      return Num_u(Num_asu(lval) % divisor);
+    }
+
+    i64 divisor = Num_asi(rval);
+
+    if (divisor == 0)
+    { return lval; }
+
+    return Num_i(Num_asi(lval) % divisor);
   }
 }
 
 extern "C" 
 {
+  Num sm_abs(Num val)
+  { return alg::abs(val); }
+  Num sm_neg(Num val)
+  { return alg::neg(val); }
+  i8 sm_sign(Num val)
+  { return alg::sign(val); }
 
+  Num sm_ceil(i16 place, Num val)
+  { return alg::ceil(place, val); }
+  Num sm_floor(i16 place, Num val)
+  { return alg::floor(place, val); }
+  Num sm_round(i16 place, Num val)
+  { return alg::round(place, val); }
+
+  i8 sm_cmpii(Num lval, Num rval)
+  { return alg::cmp_ii(lval, rval); }
+  i8 sm_cmpiu(Num lval, Num rval)
+  { return alg::cmp_iu(lval, rval); }
+  i8 sm_cmpif(Num lval, Num rval)
+  { return alg::cmp_if(lval, rval); }
+
+  i8 sm_cmpui(Num lval, Num rval)
+  { return alg::cmp_ui(lval, rval); }
+  i8 sm_cmpuu(Num lval, Num rval)
+  { return alg::cmp_uu(lval, rval); }
+  i8 sm_cmpuf(Num lval, Num rval)
+  { return alg::cmp_uf(lval, rval); }
+
+  i8 sm_cmpfi(Num lval, Num rval)
+  { return alg::cmp_fi(lval, rval); }
+  i8 sm_cmpfu(Num lval, Num rval)
+  { return alg::cmp_fu(lval, rval); }
+  i8 sm_cmpff(Num lval, Num rval)
+  { return alg::cmp_ff(lval, rval); }
+
+  i8 sm_cmp(Num lval, Num rval)
+  { return alg::cmp(lval, rval); }
+
+  Num sm_min(Num lval, Num rval)
+  { return alg::min(lval, rval); }
+  Num sm_max(Num lval, Num rval)
+  { return alg::max(lval, rval); }
+  Num sm_clamp(Num val, Num min_val, Num max_val)
+  { return alg::clamp(val, min_val, max_val); }
+  Num sm_avr(Num lval, Num rval)
+  { return alg::avr(lval, rval); }
+  Num sm_fmod(Num lval, Num rval)
+  { return alg::fmod(lval, rval); }
+  Num sm_mod(Num lval, Num rval)
+  { return alg::mod(lval, rval); }
 }
