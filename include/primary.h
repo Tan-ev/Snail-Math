@@ -1,9 +1,6 @@
 #ifndef SM_PRIMARY_H
 #define SM_PRIMARY_H
 
-#include "defs/Num.h"
-#include "defs/constdef.h"
-
 /* the result of sm_sign */
 #define SM_PLUS 1
 #define SM_ZERO 0

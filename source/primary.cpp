@@ -1,4 +1,7 @@
 #include "primary.h"
+#include "defs/Num.h"
+#include "defs/constdef.h"
+
 #include "defs/CNum.hpp"
 
 namespace alg
