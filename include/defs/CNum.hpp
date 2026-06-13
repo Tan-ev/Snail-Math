@@ -71,7 +71,7 @@ public:
   /* operation function */
   inline constexpr CNum &operator=(Num other) noexcept
   {
-    *this = other;
+    Num_set(this, other);
     return *this;
   }
 

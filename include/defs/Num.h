@@ -62,7 +62,9 @@ inline static void Num_set(Num *obj, Num other)
 {
   if (!obj)
   { return; }
-  *obj = other;
+
+  obj->type = other.type;
+  obj->i = other.i;
 }
 
 inline static constexpr i64 Num_asi(Num obj)
